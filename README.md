@@ -36,7 +36,7 @@ This tool keeps a separate profile for each account on your PC and swaps between
 
 1. **Download** this repository: click **Code > Download ZIP** on GitHub and extract it, or clone it:
    ```
-   git clone https://github.com/<your-user>/claude-account-switcher.git
+   git clone https://github.com/AbdulSamad001122/Claude-Multi-Account-Switcher.git
    ```
 2. **Put the folder somewhere permanent**, for example `Documents\Tools\Claude Account Switcher`.
    Do **not** put it inside `%LOCALAPPDATA%\Claude-Data` (the tool refuses to run from there).
