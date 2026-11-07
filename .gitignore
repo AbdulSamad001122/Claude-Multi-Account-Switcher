@@ -1,0 +1,17 @@
+# Test screenshots and scratch files
+_*.png
+*.log
+*.tmp
+
+# Windows
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Claude Code local settings
+.claude/settings.local.json
