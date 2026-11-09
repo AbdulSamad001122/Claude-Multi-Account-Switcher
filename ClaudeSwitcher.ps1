@@ -99,6 +99,17 @@ function Get-ClaudeProcesses {
     })
 }
 
+# Claude (like Chrome) writes new sign-in cookies to disk on a ~30 second timer.
+# Force-closing it sooner after signing in loses the sign-in. Profiles created
+# within the last hour count as "fresh" and get a safe-save wait before closing.
+$SaveWaitSeconds   = 32
+$FreshWindowMinutes = 60
+function Test-FreshProfile {
+    if (-not (Test-Path -LiteralPath $Active)) { return $false }
+    $age = (Get-Date) - (Get-Item -LiteralPath $Active).CreationTime
+    return ($age.TotalMinutes -lt $FreshWindowMinutes)
+}
+
 function Close-Claude {
     if ($SkipProcessCheck) { return $true }
     $procs = Get-ClaudeProcesses
@@ -112,8 +123,16 @@ function Close-Claude {
     # Ask nicely first (lets Claude save its window state), but only briefly:
     # Claude normally hides in the system tray instead of exiting.
     foreach ($p in $procs) { try { if ($p.MainWindowHandle -ne 0) { [void]$p.CloseMainWindow() } } catch { } }
-    for ($i = 0; $i -lt 10; $i++) {
-        Start-Sleep -Milliseconds 200
+    # A recently added account may hold a sign-in that Claude has not written to
+    # disk yet (it saves sign-ins about every 30 seconds). Give it time to save.
+    $waitSeconds = 2
+    if (Test-FreshProfile) {
+        Say "Saving the new account's sign-in before closing Claude (about 30 seconds)..." Cyan
+        $waitSeconds = $SaveWaitSeconds
+    }
+    $deadline = (Get-Date).AddSeconds($waitSeconds)
+    while ((Get-Date) -lt $deadline) {
+        Start-Sleep -Milliseconds 250
         if ((Get-ClaudeProcesses).Count -eq 0) { return $true }
     }
     Get-ClaudeProcesses | Stop-Process -Force -ErrorAction SilentlyContinue

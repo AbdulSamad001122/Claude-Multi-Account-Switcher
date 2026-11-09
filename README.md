@@ -59,7 +59,7 @@ When the window opens for the first time, it asks you to name the account Claude
 Click **Switch** next to the account you want, then confirm. Claude closes and reopens already signed in to that account.
 
 > Switching closes Claude. Finish your work first, because anything running in Claude (a chat reply, a Claude Code task) stops.
-> After signing in to a brand-new account, wait about 30 seconds before switching away, so Claude has time to save the sign-in.
+> For an account added in the last hour, switching away from it takes about 30 seconds longer. Claude saves a new sign-in to disk only every ~30 seconds, so the tool waits for that before closing Claude. Without this wait, a brand-new sign-in could be lost and the account would open signed out.
 
 ### Other buttons
 | Button | What it does |

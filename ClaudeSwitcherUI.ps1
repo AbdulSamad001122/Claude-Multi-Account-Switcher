@@ -467,8 +467,13 @@ function Start-Switch([string]$target, [bool]$isNew) {
     }
 
     $script:TargetIsNew = $isNew
-    Start-Engine 'switch' $target @('-SwitchTo', "`"$target`"") $(if ($isNew) { "Closing Claude and preparing $target... Claude will open for you to sign in." }
-                                                                 else { "Closing Claude and switching to $target... just a few seconds." })
+    $busy = if ($isNew) { "Closing Claude and preparing $target... Claude will open for you to sign in." }
+            else { "Closing Claude and switching to $target... just a few seconds." }
+    if ($cur -and -not $SkipProcessCheck -and (Get-ClaudeProcesses).Count -gt 0 -and (Test-FreshProfile)) {
+        $busy = "$cur was added recently, so first making sure its sign-in is saved (about 30 seconds). " +
+                "Then switching to $target. Please wait..."
+    }
+    Start-Engine 'switch' $target @('-SwitchTo', "`"$target`"") $busy
 }
 
 function Start-Delete([string]$name) {
